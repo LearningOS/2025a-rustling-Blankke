@@ -32,7 +32,9 @@ unsafe fn modify_by_address(address: usize) {
     // code's behavior and the contract of this function. You may use the
     // comment of the test below as your format reference.
     unsafe {
-        todo!("Your code goes here")
+        let r = address as *mut u32;
+        // SAFETY: The `address` is guaranteed to be a valid address
+        *r = 0xAABBCCDD;
     }
 }
 
