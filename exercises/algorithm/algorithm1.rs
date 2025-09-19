@@ -69,14 +69,67 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self
+	where
+		T: PartialOrd,
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
+		let mut list_c = LinkedList::<T>::new();
+		
+		while list_a.start.is_some() && list_b.start.is_some() {
+			let a_val = unsafe { &(*list_a.start.unwrap().as_ptr()).val };
+			let b_val = unsafe { &(*list_b.start.unwrap().as_ptr()).val };
+			
+			if a_val <= b_val {
+				// 取出 list_a 的第一个节点
+				let node_ptr = list_a.start.unwrap();
+				let node = unsafe { Box::from_raw(node_ptr.as_ptr()) };
+				list_a.start = node.next;
+				if list_a.start.is_none() {
+					list_a.end = None;
+				}
+				list_a.length -= 1;
+				
+				// 添加到 list_c
+				list_c.add(node.val);
+			} else {
+				// 取出 list_b 的第一个节点
+				let node_ptr = list_b.start.unwrap();
+				let node = unsafe { Box::from_raw(node_ptr.as_ptr()) };
+				list_b.start = node.next;
+				if list_b.start.is_none() {
+					list_b.end = None;
+				}
+				list_b.length -= 1;
+				
+				// 添加到 list_c
+				list_c.add(node.val);
+			}
+		}
+		
+		// 添加剩余的节点
+		while list_a.start.is_some() {
+			let node_ptr = list_a.start.unwrap();
+			let node = unsafe { Box::from_raw(node_ptr.as_ptr()) };
+			list_a.start = node.next;
+			if list_a.start.is_none() {
+				list_a.end = None;
+			}
+			list_a.length -= 1;
+			list_c.add(node.val);
+		}
+		
+		while list_b.start.is_some() {
+			let node_ptr = list_b.start.unwrap();
+			let node = unsafe { Box::from_raw(node_ptr.as_ptr()) };
+			list_b.start = node.next;
+			if list_b.start.is_none() {
+				list_b.end = None;
+			}
+			list_b.length -= 1;
+			list_c.add(node.val);
+		}
+		
+		list_c
 	}
 }
 
